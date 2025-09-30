@@ -1,0 +1,37 @@
+{
+  "name": "wordsmaster",
+  "version": "1.0.0",
+  "description": "A professional word unscrambling game with multiple difficulty levels",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server --port=3000 --open=/index.html",
+    "build": "echo Build step not configured yet",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "words:ambiguous": "node scripts/findAmbiguousWords.js",
+    "words:alternates": "node scripts/generateAlternates.js"
+  },
+  "keywords": [
+    "game",
+    "word-game",
+    "puzzle",
+    "javascript",
+    "html5",
+    "educational"
+  ],
+  "author": "itsLatifur",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/itsLatifur/WordMaster.git"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "live-server": "^1.2.2",
+    "serve": "^14.2.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.0"
+  }
+}

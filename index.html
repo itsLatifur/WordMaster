@@ -1,1288 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WordsMaster - Word Guessing Game</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        :root {
-            --primary-color: #275e66;
-            /* Main color */
-            --accent-color: #ff6b6b;
-            /* Vibrant coral accent */
-            --secondary-color: #a5d8dd;
-            /* Light teal secondary */
-            --text-color: #ffffff;
-            /* White text */
-            --shadow-color: 39, 94, 102;
-            /* RGB values for primary color */
-            --action-color: #4CAF50;
-            /* Logo */
-            --logo-top: 20px;
-            --logo-height: 2.5rem;
-            --score-top: 20px;
-            --score-height: 1.2rem;
-        }
-
-        .container {
-            padding-top: calc(var(--logo-height) + 40px);
-            position: relative;
-            z-index: 100;
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                --logo-top: 15px;
-                --logo-height: 1.5rem;
-                --score-top: 15px;
-                --score-height: 1rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            :root {
-                --logo-top: 10px;
-                --logo-height: 1.2rem;
-                --score-top: 10px;
-                --score-height: 0.75rem;
-            }
-        }
-
-        /* Add close button styling */
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(18, 107, 103, 0.85); /* Same as modal-rules */
-            color: var(--text-color);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            z-index: 1050;
-            max-width: 90vw; /* Responsive */
-            width: 500px; /* Default size */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
-        }
-
-        .popup h2 {
-            font-size: 36px; /* Increased from 24px */
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .popup p {
-            font-size: 18px; /* Slightly larger */
-        }
-
-        .popup .close-popup {
-            position: absolute;
-            top: 12px;
-            right: 18px;
-            font-size: 24px; /* Increased size */
-            cursor: pointer;
-            color: var(--text-color);
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
-
-        .popup .close-popup:hover {
-            transform: scale(1.3);
-            color: var(--accent-color);
-        }
-
-        /* Responsive Design using Bootstrap */
-        @media (max-width: 768px) {
-            .popup {
-                width: 90%; /* Takes more space on smaller screens */
-                padding: 20px;
-            }
-
-            .popup h2 {
-                font-size: 30px; /* Slightly smaller for mobile */
-            }
-
-            .popup .close-popup {
-                font-size: 22px;
-            }
-        }
-
-        .form-control,
-        .form-select {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--primary-color) !important;
-            /* Changed from var(--text-color) */
-            border: 1px solid var(--secondary-color);
-        }
-
-        /* Primary buttons */
-        .btn-primary {
-            background-color: var(--action-color) !important;
-            border-color: var(--action-color) !important;
-            color: var(--text-color) !important;
-        }
-
-        /* Hover and active states */
-        .btn-primary:hover,
-        .btn-primary:focus,
-        .btn-primary:active {
-            background-color: color-mix(in srgb, var(--action-color), black 15%) !important;
-            border-color: color-mix(in srgb, var(--action-color), black 15%) !important;
-            box-shadow: 0 0 10px var(--action-color);
-        }
-
-        /* Loading screen button */
-        .modal-footer .btn-primary {
-            background-color: var(--action-color) !important;
-            border-color: var(--action-color) !important;
-        }
-
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.158);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease;
-        }
-
-        .form-select,
-        .form-select option {
-            color: var(--primary-color) !important;
-        }
-
-        .form-control,
-        .form-control::placeholder {
-            color: var(--primary-color) !important;
-            opacity: 1;
-        }
-
-        .box,
-        .container-box {
-            color: var(--text-color);
-        }
-
-        .form-range::-webkit-slider-thumb {
-            background: var(--accent-color);
-        }
-
-        .form-range::-webkit-slider-runnable-track {
-            background: var(--secondary-color);
-        }
-
-        .loading-content {
-            text-align: center;
-        }
-
-        .loading-logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 20px;
-            animation: logoBounce 1.5s infinite;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--accent-color);
-            border-radius: 50%;
-            margin: 0 auto;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes logoBounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .loading-logo {
-                font-size: 2rem;
-            }
-
-            .spinner {
-                width: 40px;
-                height: 40px;
-            }
-        }
-
-        .modal-content {
-            border-radius: 15px;
-            background: var(--primary-color) !important;
-            color: var(--text-color);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--accent-color);
-            box-shadow: 0 0 15px rgba(var(--shadow-color), 0.3);
-            animation: glow 2s infinite alternate;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .bi {
-            vertical-align: middle;
-        }
-
-        body {
-            background: transparent !important;
-            overflow: hidden;
-        }
-
-        #background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background-color: black;
-        }
-
-        .high-score-bar,
-        .container-box,
-        .box {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--secondary-color);
-            box-shadow: 0 0 15px rgba(var(--shadow-color), 0.3);
-            animation: glow 2s infinite alternate;
-        }
-
-        .word-box,
-        .high-score,
-        .game-logo,
-        .modal-title,
-        .form-label {
-            color: var(--text-color) !important;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .form-control,
-        .form-select {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-color) !important;
-            border: 1px solid var(--secondary-color);
-        }
-
-        .spinner {
-            border-top-color: var(--accent-color);
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 10px rgba(var(--shadow-color), 0);
-            }
-
-            to {
-                box-shadow: 0 0 20px rgba(var(--shadow-color), 0.4);
-            }
-        }
-
-        .game-logo {
-            font-weight: 700;
-            position: fixed;
-            top: var(--logo-top);
-            font-size: var(--logo-height);
-            left: 20px;
-            z-index: 1000;
-        }
-
-        .high-score {
-            top: var(--score-top);
-            font-size: var(--score-height);
-            font-weight: 500;
-            position: fixed;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 15px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
-            border: 1px solid var(--secondary-color);
-        }
-
-        @media (max-width: 768px) {
-            .game-logo {
-                font-size: 1.2rem;
-                top: 15px;
-                left: 15px;
-            }
-
-            .high-score {
-                font-size: 0.9rem;
-                top: 15px;
-                right: 15px;
-                padding: 8px 12px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .game-logo {
-                font-size: 1rem;
-                top: 10px;
-                left: 10px;
-            }
-
-            .high-score {
-                font-size: 0.8rem;
-                top: 10px;
-                right: 10px;
-                padding: 6px 10px;
-            }
-        }
-
-        .container-box {
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            max-width: 800px;
-        }
-
-        .box {
-            padding: 20px;
-            margin: 15px auto;
-            border-radius: 10px;
-        }
-
-        .word-box {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: var(--text-color);
-            min-height: 60px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .correct {
-            animation: correctFlash 0.5s;
-            background-color: rgba(76, 175, 80, 0.3) !important;
-        }
-
-        .wrong {
-            animation: wrongShake 0.5s;
-            background-color: rgba(244, 67, 54, 0.3) !important;
-        }
-
-        @keyframes correctFlash {
-            0% {
-                background-color: rgba(76, 175, 80, 0.6);
-                transform: scale(1.05);
-            }
-
-            100% {
-                background-color: transparent;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes wrongShake {
-            0% {
-                transform: translateX(-10px);
-                background-color: rgba(244, 67, 54, 0.6);
-            }
-
-            25% {
-                transform: translateX(10px);
-            }
-
-            50% {
-                transform: translateX(-10px);
-            }
-
-            75% {
-                transform: translateX(10px);
-            }
-
-            100% {
-                transform: translateX(0);
-                background-color: transparent;
-            }
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            pointer-events: none;
-            animation: confettiFall linear;
-        }
-
-        @keyframes confettiFall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        @media (max-width: 576px) {
-            .game-logo {
-                font-size: 1.2rem;
-            }
-
-            .high-score {
-                font-size: 0.9rem;
-            }
-
-            .container-box {
-                padding: 15px;
-            }
-
-            .word-box {
-                font-size: 1.5rem;
-            }
-        }
-
-        .sound-control {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 2000;
-            background: rgba(255, 255, 255, 0.651);
-            border-radius: 50%;
-            padding: 12px;
-            box-shadow: 0 2px 10px var(--secondary-color);
-            backdrop-filter: blur(5px);
-        }
-
-        .vibrate {
-            animation: vibrate 0.3s linear;
-        }
-
-        @keyframes vibrate {
-            0% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-3px);
-            }
-
-            50% {
-                transform: translateX(3px);
-            }
-
-            75% {
-                transform: translateX(-3px);
-            }
-
-            100% {
-                transform: translateX(0);
-            }
-        }
-        /* Text Box CSS */
-        input[type="text"] {
-            background-color: var(--primary-color) !important; /* Sets background to primary color */
-            color: var(--text-color) !important; /* Ensures text color is readable */
-            border: 2px solid var(--primary-color); /* Matches the theme */
-            padding: 8px;
-            border-radius: 5px;
-        }
-
-        input[type="text"]::placeholder {
-            color: rgba(255, 255, 255, 0.7); /* Lighten placeholder text */
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--secondary-color); /* Optional: Change border on focus */
-        }
-
-        @keyframes popupEntrance {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .popup-content {
-                font-size: 2rem;
-                padding: 1.5rem 3rem;
-            }
-        }
-
-        /* Results table styling */
-        .table {
-            --table-bg: rgba(255, 255, 255, 0.1);
-            --table-border: var(--secondary-color);
-            --table-header-bg: rgba(var(--shadow-color), 0.3);
-            color: var(--text-color) !important;
-            background-color: var(--table-bg) !important;
-            border-color: var(--table-border) !important;
-        }
-
-        .table th {
-            background-color: var(--table-header-bg) !important;
-            border-bottom: 2px solid var(--secondary-color) !important;
-        }
-
-        .table td {
-            border-color: var(--secondary-color) !important;
-            font-weight: bold;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(var(--shadow-color), 0.1) !important;
-        }
-
-        /* Responsive table container */
-        .table-responsive {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(var(--shadow-color), 0.2);
-        }
-
-        /* Zebra striping effect */
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(var(--shadow-color), 0.05);
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 768px) {
-
-            .table td,
-            .table th {
-                padding: 0.75rem;
-                font-size: 0.9rem;
-            }
-
-            .table-responsive {
-                margin: 0 -15px;
-                width: calc(100% + 30px);
-            }
-        }
-
-        @keyframes tableEntrance {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .table-responsive {
-            animation: tableEntrance 0.6s ease-out;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="background"></div> 
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
-    <script>
-        // Initialize Vanta after DOM loads
-        document.addEventListener('DOMContentLoaded', () => {
-            VANTA.WAVES({
-                el: "#background",
-                mouseControls: true,
-                touchControls: true,
-                gyroControls: false,
-                minHeight: 200.00,
-                minWidth: 200.00,
-                scale: 1.00,
-                scaleMobile: 1.00,
-                color: 0x275e66,
-                shininess: 42.00,
-                waveHeight: 22.00,
-                waveSpeed: 1.40,
-                zoom: 0.91
-            })
-        });
-    </script>
+    <!-- External CSS Libraries -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- Local CSS Files -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>"
+    />
+
+    <!-- PWA Manifest & Theme Color -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#275e66" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>"
+    />
+  </head>
+
+  <body>
+    <!-- Animated Background -->
+    <div id="background" aria-hidden="true"></div>
 
     <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-content">
-            <div class="loading-logo">WordsMaster</div>
-            <div class="spinner"></div>
-        </div>
+    <div
+      id="loadingScreen"
+      class="loading-screen"
+      role="dialog"
+      aria-label="Loading game"
+    >
+      <div class="loading-content">
+        <div class="loading-logo" aria-label="WordsMaster">WordsMaster</div>
+        <div class="spinner" aria-label="Loading"></div>
+      </div>
     </div>
 
     <!-- Rules Modal -->
-    <div id="rulesModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Game Rules & Settings</h5>
-                </div>
-                <div class="modal-body">
-                    <h6>How to Play:</h6>
-                    <ul>
-                        <li>Unscramble the words before time runs out</li>
-                        <li>3 Hearts = 3 wrong attempts</li>
-                        <li>Use hints to reveal letters (3 hints/game)</li>
-                        <li>Difficulty levels change word count and time</li>
-                    </ul>
+    <div
+      id="rulesModal"
+      class="modal fade"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="rulesModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rulesModalLabel">
+              Game Rules & Settings
+            </h5>
+          </div>
+          <div class="modal-body">
+            <section aria-labelledby="howToPlayHeading">
+              <h6 id="howToPlayHeading">How to Play:</h6>
+              <ul>
+                <li>Unscramble the words before time runs out</li>
+                <li>3 Hearts = 3 wrong attempts</li>
+                <li>Use hints to reveal letters (3 hints per game)</li>
+                <li>Difficulty levels change word count and time</li>
+              </ul>
+            </section>
 
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="musicCheck" checked>
-                            <label class="form-check-label" for="musicCheck">
-                                Background Music <i class="bi bi-music-note"></i>
-                            </label>
-                        </div>
-                        <div class="mt-2">
-                            <label class="form-label">Music Volume</label>
-                            <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
-                        </div>
-                    </div>
+            <section aria-labelledby="audioSettingsHeading">
+              <h6 id="audioSettingsHeading">Audio Settings:</h6>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="musicCheck"
+                    checked
+                  />
+                  <label class="form-check-label" for="musicCheck">
+                    Background Music
+                    <i class="bi bi-music-note" aria-hidden="true"></i>
+                  </label>
+                </div>
+                <div class="mt-2">
+                  <label class="form-label" for="volumeSlider"
+                    >Music Volume</label
+                  >
+                  <input
+                    type="range"
+                    class="form-range"
+                    id="volumeSlider"
+                    min="0"
+                    max="100"
+                    value="50"
+                    aria-label="Music volume"
+                  />
+                </div>
+              </div>
 
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="sfxCheck" checked>
-                            <label class="form-check-label" for="sfxCheck">
-                                Sound Effects <i class="bi bi-speaker"></i>
-                            </label>
-                        </div>
-                    </div>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="sfxCheck"
+                    checked
+                  />
+                  <label class="form-check-label" for="sfxCheck">
+                    Sound Effects
+                    <i class="bi bi-speaker" aria-hidden="true"></i>
+                  </label>
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-primary w-50" onclick="startGameAfterRules()">Okay!</button>
-                </div>
-            </div>
+              </div>
+            </section>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button
+              type="button"
+              class="btn btn-primary w-50"
+              onclick="startGameAfterRules()"
+            >
+              Let's Play!
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- Top Section -->
-    <div class="game-logo">WordsMaster</div>
-    <div class="high-score">🏆 Highest Score: <span id="highScoreValue">0</span></div>
+    <!-- Top UI Elements -->
+    <header>
+      <h1 class="game-logo" aria-label="WordsMaster Game">WordsMaster</h1>
+      <div class="high-score" aria-label="Current high score">
+        🏆 Highest Score: <span id="highScoreValue">0</span>
+      </div>
+    </header>
 
-    <!-- Game Container -->
-    <div class="container">
-        <!-- Start Section -->
-        <div id="startSection" class="container-box">
-            <h3 class="text-center mb-4">Choose Level</h3>
-            <div class="box">
-                <label for="difficulty" class="form-label">Mode :</label>
-                <select id="difficulty" class="form-select">
-                    <option value="easy">Easy (5 words - 2:00)</option>
-                    <option value="medium">Medium (10 words - 2:30)</option>
-                    <option value="hard">Hard (20 words - 3:00)</option>
-                </select>
+    <!-- Main Game Container -->
+    <main class="container">
+      <!-- Start Section -->
+      <section
+        id="startSection"
+        class="container-box"
+        aria-labelledby="startSectionHeading"
+      >
+        <h2 id="startSectionHeading" class="text-center mb-4">
+          Choose Difficulty Level
+        </h2>
+        <div class="box">
+          <label for="difficulty" class="form-label">Game Mode:</label>
+          <select
+            id="difficulty"
+            class="form-select"
+            aria-describedby="difficultyHelp"
+          >
+            <option value="easy">Easy (5 words - 2:00 minutes)</option>
+            <option value="medium">Medium (10 words - 2:30 minutes)</option>
+            <option value="hard">Hard (20 words - 3:00 minutes)</option>
+          </select>
+          <div id="difficultyHelp" class="form-text">
+            Choose your challenge level
+          </div>
+        </div>
+        <button
+          class="btn btn-primary w-100 mt-3"
+          onclick="startGame()"
+          aria-describedby="startButtonHelp"
+        >
+          Start Game
+        </button>
+        <div id="startButtonHelp" class="form-text text-center mt-2">
+          Begin your word unscrambling adventure!
+        </div>
+      </section>
+
+      <!-- Perfect Game Popup -->
+      <div
+        id="perfectPopup"
+        class="popup hidden"
+        role="dialog"
+        aria-labelledby="perfectTitle"
+        aria-modal="true"
+      >
+        <button
+          class="close-popup"
+          aria-label="Close perfect game notification"
+        >
+          &times;
+        </button>
+        <h2 id="perfectTitle">PERFECT GAME!</h2>
+        <p>Amazing! You solved all words without using any hints!</p>
+      </div>
+
+      <!-- High Score Popup -->
+      <div
+        id="highscorePopup"
+        class="popup hidden"
+        role="dialog"
+        aria-labelledby="highscoreTitle"
+        aria-modal="true"
+      >
+        <button class="close-popup" aria-label="Close high score notification">
+          &times;
+        </button>
+        <h2 id="highscoreTitle">NEW RECORD!</h2>
+        <p>Congratulations! You've set a new high score!</p>
+      </div>
+
+      <!-- Game Section -->
+      <section
+        id="gameSection"
+        class="container-box hidden"
+        aria-labelledby="gameSectionHeading"
+      >
+        <h2 id="gameSectionHeading" class="sr-only">Game Play Area</h2>
+
+        <!-- Game Stats -->
+        <div class="row g-3 mb-4 hud" role="group" aria-label="Game statistics">
+          <div class="col-6 col-md-3 box text-center">
+            <div class="text-muted small">Time Left</div>
+            <div id="timer" class="fw-bold" aria-live="polite">02:00</div>
+            <div
+              class="time-progress progress neon mt-2"
+              role="progressbar"
+              aria-label="Time remaining"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div id="timeBar" class="progress-bar"></div>
             </div>
-            <button class="btn btn-primary w-100 mt-3" onclick="startGame()">Start Game</button>
+          </div>
+          <div class="col-6 col-md-3 box text-center">
+            <div class="text-muted small">Score</div>
+            <div class="score-readout">
+              <span id="score" aria-live="polite">0</span>
+            </div>
+            <div id="streakBadge" class="streak-badge mt-2" aria-live="polite">
+              x0 Combo
+            </div>
+          </div>
+          <div class="col-6 col-md-3 box text-center">
+            <div class="text-muted small">Progress</div>
+            <div id="wordCount" aria-live="polite">0/5</div>
+            <div
+              class="word-progress progress neon mt-2"
+              role="progressbar"
+              aria-label="Word progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div id="wordProgressBar" class="progress-bar"></div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3 box text-center">
+            <div class="text-muted small">Lives</div>
+            <div id="lives" aria-live="polite" aria-label="3 lives remaining">
+              ❤️❤️❤️
+            </div>
+          </div>
         </div>
 
-        <div id="perfectPopup" class="popup hidden">
-            <span class="close-popup">&times;</span>
-            <h2>PERFECT</h2>
-            <p>You solved all words without hints!</p>
-        </div>
-        
-        <div id="highscorePopup" class="popup hidden">
-            <span class="close-popup">&times;</span>
-            <h2>NEW RECORD!</h2>
-            <p>Congratulations, you set a new high score!</p>
-        </div>
-
-
-        <!-- Game Section -->
-        <div id="gameSection" class="container-box hidden">
-            <div class="row g-3 mb-4">
-                <div class="col-4 box text-center">
-                    <div class="text-muted small">Time Left</div>
-                    <div id="timer" class="fw-bold">02:00</div>
-                </div>
-                <div class="col-4 box text-center">
-                    <div class="text-muted small">Score</div>
-                    <div><span id="score">0</span></div>
-                </div>
-                <div class="col-4 box text-center">
-                    <div class="text-muted small">Word Count</div>
-                    <div id="wordCount">0/5</div>
-                </div>
-                <div class="col-4 box text-center">
-                    <div class="text-muted small">Lives</div>
-                    <div id="lives">❤️❤️❤️</div>
-                </div>
-            </div>
-
-            <div class="box text-center">
-                <div class="text-muted small">Current Word</div>
-                <div id="scrambledWord" class="word-box mt-2"></div>
-                <div id="hintArea" class="text-muted small mt-2"></div>
-            </div>
-
-            <div class="box">
-                <input type="text" id="userInput" class="form-control form-control-lg" placeholder="Type your answer..."
-                    autocomplete="off">
-            </div>
-
-            <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-3">
-                <button class="btn btn-success" onclick="submitAnswer()">Submit</button>
-                <button class="btn btn-info" onclick="useHint()">Hint (3 left)</button>
-                <button class="btn btn-danger" onclick="skipWord()">Skip</button>
-            </div>
+        <!-- Current Word Display -->
+        <div class="box text-center">
+          <label for="scrambledWord" class="text-muted small"
+            >Current Scrambled Word</label
+          >
+          <div
+            id="scrambledWord"
+            class="word-box tiles mt-2"
+            aria-live="polite"
+            role="main"
+          ></div>
+          <div
+            id="hintArea"
+            class="text-muted small mt-2"
+            aria-live="polite"
+            aria-label="Hint area"
+          ></div>
         </div>
 
-        <!-- Statistics Section -->
-        <div id="statsSection" class="container-box hidden">
-            <h4 class="text-center mb-4">Game Results</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <tbody>
-                        <tr>
-                            <td>Total Words</td>
-                            <td><span id="statTotal">0</span></td>
-                        </tr>
-                        <tr>
-                            <td>Solved</td>
-                            <td><span id="statSolved">0</span> (<span id="solvedWords"></span>)</td>
-                        </tr>
-                        <tr>
-                            <td>Missed</td>
-                            <td><span id="statMissed">0</span> (<span id="missedWords"></span>)</td>
-                        </tr>
-                        <tr>
-                            <td>Success Rate</td>
-                            <td><span id="statPercentage">0</span>%</td>
-                        </tr>
-                        <tr>
-                            <td>Time Bonus</td>
-                            <td>+<span id="timeBonus">0</span> points</td>
-                        </tr>
-                        <tr>
-                            <td>Longest Streak</td>
-                            <td><span id="statStreak">0</span></td>
-                        </tr>
-                        <tr>
-                            <td>Final Score</td>
-                            <td><span id="finalScore">0</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <button class="btn btn-primary w-100 mt-3" onclick="playAgain()">Play Again</button>
+        <!-- Answer Input -->
+        <div class="box">
+          <label for="userInput" class="sr-only">Your answer</label>
+          <input
+            type="text"
+            id="userInput"
+            class="form-control form-control-lg"
+            placeholder="Type your answer here..."
+            autocomplete="off"
+            aria-describedby="inputHelp"
+          />
+          <div id="inputHelp" class="form-text">
+            Unscramble the letters to form a word
+          </div>
         </div>
-    </div>
+
+        <!-- Game Action Buttons -->
+        <div
+          class="d-grid gap-2 d-md-flex justify-content-md-between mt-3"
+          role="group"
+          aria-label="Game actions"
+        >
+          <button
+            class="btn btn-success"
+            onclick="submitAnswer()"
+            aria-describedby="submitHelp"
+          >
+            <i class="bi bi-check-circle" aria-hidden="true"></i> Submit Answer
+          </button>
+          <button
+            class="btn btn-info"
+            onclick="useHint()"
+            aria-describedby="hintHelp"
+          >
+            <i class="bi bi-lightbulb" aria-hidden="true"></i>
+            <span id="hintButtonText">Hint (3 left)</span>
+          </button>
+          <button
+            class="btn btn-warning"
+            onclick="skipWord()"
+            aria-describedby="skipHelp"
+          >
+            <i class="bi bi-skip-forward" aria-hidden="true"></i> Skip Word
+          </button>
+        </div>
+      </section>
+
+      <!-- Statistics Section -->
+      <section
+        id="statsSection"
+        class="container-box hidden"
+        aria-labelledby="statsSectionHeading"
+      >
+        <h2 id="statsSectionHeading" class="text-center mb-4">Game Results</h2>
+        <div class="table-responsive">
+          <table
+            class="table table-striped table-hover"
+            aria-label="Detailed game statistics"
+          >
+            <caption class="sr-only">
+              Your performance breakdown for this game
+            </caption>
+            <tbody>
+              <tr>
+                <th scope="row">Total Words</th>
+                <td>
+                  <span id="statTotal" aria-label="Total words in game">0</span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Words Solved</th>
+                <td>
+                  <span id="statSolved" aria-label="Number of words solved"
+                    >0</span
+                  >
+                  (<span
+                    id="solvedWords"
+                    class="text-muted"
+                    aria-label="List of solved words"
+                  ></span
+                  >)
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Words Missed</th>
+                <td>
+                  <span id="statMissed" aria-label="Number of words missed"
+                    >0</span
+                  >
+                  (<span
+                    id="missedWords"
+                    class="text-muted"
+                    aria-label="List of missed words"
+                  ></span
+                  >)
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Success Rate</th>
+                <td>
+                  <span
+                    id="statPercentage"
+                    aria-label="Percentage of words solved"
+                    >0</span
+                  >%
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Bonus Points</th>
+                <td>
+                  +<span id="timeBonus" aria-label="Bonus points earned"
+                    >0</span
+                  >
+                  points
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Longest Streak</th>
+                <td>
+                  <span
+                    id="statStreak"
+                    aria-label="Longest consecutive correct answers"
+                    >0</span
+                  >
+                </td>
+              </tr>
+              <tr class="table-primary">
+                <th scope="row">Final Score</th>
+                <td>
+                  <strong
+                    ><span id="finalScore" aria-label="Your final score"
+                      >0</span
+                    ></strong
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-primary w-100 mt-3" onclick="playAgain()">
+          <i class="bi bi-arrow-repeat" aria-hidden="true"></i> Play Again
+        </button>
+      </section>
+    </main>
 
     <!-- Sound Control -->
-    <div class="sound-control">
-        <button id="soundToggle" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-volume-up"></i>
-        </button>
-    </div>
-
-    <script>
-
-        let audio = {}; // Global audio object
-
-            function loadAudioResources() {
-                audio = {
-                    bgm: new Audio('bgm.mp3'),
-                    correct: new Audio('correct-sfx.mp3'),
-                    wrong: new Audio('wrong-sfx.mp3'),
-                    highscore: new Audio('highscore-sfx.mp3'),
-                    perfect: new Audio('perfect-sfx.mp3')
-                };
-
-                // Set audio preload and loop properties
-                audio.bgm.loop = true;
-                audio.bgm.preload = 'auto';
-            }
-        
-        // Loader Animation
-        function showLoader() {
-            document.getElementById('loadingScreen').style.display = 'flex';
-            document.getElementById('loadingScreen').style.opacity = '1';
-        }
-
-        function hideLoader() {
-            document.getElementById('loadingScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-            }, 300);
-        }
-
-        function closePopup(popupId) {
-                const popup = document.getElementById(popupId);
-                if (popup) {
-                    popup.classList.add('hidden');
-                }
-            }
-
-        //window load event handler
-            window.addEventListener('load', async () => {
-                    showLoader();
-                    await loadAudioResources();
-                    setTimeout(() => {
-                        hideLoader();
-                        showRulesModal();
-                        document.getElementById('startSection').classList.remove('hidden');
-                        closePopup('highscorePopup');
-                        closePopup('perfectPopup');
-                    }, 1500);
-                });
-
-        // Audio Configuration (Replace URLs with your audio files)
-        let soundEnabled = true;
-        let musicEnabled = true;
-
-        let currentHintsUsed = {}; // Track hints per word
-
-        // Game Variables
-        const words = [
-            // Easy words (4-5 letters)
-            'apple', 'beach', 'chair', 'dance', 'eagle', 'fruit', 'grape', 'house', 'join',
-            'tree', 'blue', 'jump', 'frog', 'desk', 'lamp', 'bird', 'fish', 'book', 'star',
-            'moon', 'wind', 'rain', 'fire', 'soil', 'path', 'leaf', 'root', 'sand', 'wave',
-            'city', 'town', 'road', 'hill', 'lake', 'river', 'ship', 'boat', 'flag', 'sign',
-            'idea', 'plan', 'goal', 'task', 'form', 'list', 'data', 'code', 'file', 'user',
-            'time', 'date', 'week', 'year', 'hour', 'mile', 'foot', 'inch', 'yard', 'face',
-            'hand', 'head', 'body', 'mind', 'soul', 'life', 'love', 'hate', 'fear', 'hope',
-            'play', 'work', 'draw', 'sing', 'read', 'write', 'talk', 'walk', 'stop', 'open',
-            'close', 'find', 'lose', 'keep', 'give', 'take', 'make', 'send', 'call', 'help',
-            'need', 'want', 'feel', 'know', 'show', 'tell', 'hold', 'turn', 'move', 'grow',
-            'live', 'stay', 'fall', 'rise', 'hear', 'look', 'seem', 'mean', 'wait', 'meet',
-            // Medium words (6-7 letters)
-            'planet', 'forest', 'garden', 'valley', 'bridge', 'street', 'market', 'school', 'office', 'church',
-            'window', 'mirror', 'bottle', 'basket', 'pencil', 'tablet', 'camera', 'laptop', 'system', 'server',
-            'number', 'letter', 'phrase', 'string', 'object', 'module', 'method', 'result', 'output', 'input',
-            'moment', 'season', 'minute', 'second', 'decade', 'degree', 'weight', 'height', 'length', 'volume',
-            'animal', 'people', 'family', 'friend', 'leader', 'artist', 'writer', 'doctor', 'player', 'singer',
-            'beauty', 'wisdom', 'honesty', 'courage', 'freedom', 'justice', 'patience', 'respect', 'success', 'failure',
-            'action', 'change', 'create', 'design', 'develop', 'manage', 'reduce', 'expand', 'protect', 'support',
-            'arrive', 'depart', 'attend', 'accept', 'reject', 'inform', 'invite', 'expect', 'forget', 'remind',
-            'listen', 'notice', 'wonder', 'decide', 'select', 'obtain', 'prepare', 'perform', 'provide', 'receive',
-            'explain', 'discuss', 'compare', 'analyze', 'imagine', 'realize', 'believe', 'express', 'reflect', 'resolve',
-            // Hard words (8+ letters)
-            'mountain', 'continent', 'universe', 'adventure', 'discovery', 'invention', 'technology', 'education', 'knowledge', 'information',
-            'structure', 'mechanism', 'algorithm', 'parameter', 'interface', 'component', 'operation', 'procedure', 'statement', 'function',
-            'situation', 'condition', 'character', 'personality', 'experience', 'generation', 'population', 'environment', 'atmosphere', 'landscape',
-            'community', 'relationship', 'connection', 'communication', 'conversation', 'development', 'improvement', 'achievement', 'recognition', 'appreciation',
-            'understand', 'appreciate', 'participate', 'communicate', 'demonstrate', 'distinguish', 'investigate', 'collaborate', 'coordinate', 'contribute',
-            'anticipate', 'facilitate', 'incorporate', 'manipulate', 'negotiate', 'prioritize', 'recalibrate', 'reconfigure', 'reconstruct', 'redistribute',
-            'accessibility', 'accountability', 'adaptability', 'affordability', 'availability', 'compatibility', 'connectivity', 'credibility', 'durability', 'flexibility',
-            'fundamental', 'influential', 'instrumental', 'intellectual', 'intermittent', 'jurisdiction', 'legislation', 'manipulation', 'methodology', 'notification',
-            'organization', 'participation', 'performance', 'perspective', 'preliminary', 'probability', 'productivity', 'professional', 'relationship', 'responsibility'
-        ];
-
-        const difficultyConfig = {
-            easy: { words: 5, time: 120, minLen: 4, maxLen: 5 },
-            medium: { words: 10, time: 150, minLen: 6, maxLen: 7 },
-            hard: { words: 20, time: 180, minLen: 8, maxLen: 12 }
-        };
-
-        let game = {
-            difficulty: 'easy',
-            totalWords: 5,
-            timeLimit: 120,
-            currentWord: 0,
-            score: 0,
-            lives: 3,
-            hints: 3,
-            streak: 0,
-            longestStreak: 0,
-            timer: null,
-            startTime: null,
-            selectedWords: [],
-            solved: [],
-            missed: [],
-            wordsPlayed: 0
-        };
-
-        // High Score System
-        let highScore = parseInt(localStorage.getItem('wordGameHighScore')) || 0;
-        document.getElementById('highScoreValue').textContent = highScore;
-
-        // Rules Modal Handling
-        function showRulesModal() {
-            const modal = new bootstrap.Modal(document.getElementById('rulesModal'));
-            modal.show();
-        }
-
-        function startGame() {
-
-            if (game.timer) {
-                clearInterval(game.timer);
-                game.timer = null;
-            }
-            // Initialize game state
-            const difficulty = document.getElementById('difficulty').value;
-            const config = difficultyConfig[difficulty];
-
-            game = {
-                difficulty,
-                totalWords: config.words,
-                timeLimit: config.time,
-                currentWord: 0,
-                score: 0,
-                lives: 3,
-                hints: 3,
-                streak: 0,
-                longestStreak: 0,
-                timer: null,
-                startTime: Date.now(),
-                selectedWords: shuffleArray(
-                    words.filter(w => w.length >= config.minLen && w.length <= config.maxLen)
-                ).slice(0, config.words),
-                solved: [],
-                missed: [],
-                wordsPlayed: 0
-            };
-
-            // Update UI and start game
-            document.getElementById('startSection').classList.add('hidden');
-            document.getElementById('gameSection').classList.remove('hidden');
-            updateWordCount();
-            updateTimerDisplay(game.timeLimit);
-            game.timer = setInterval(updateGame, 1000);
-            showNextWord();
-        }
-
-        function startGameAfterRules() {
-            // Get user preferences
-            musicEnabled = document.getElementById('musicCheck').checked;
-            soundEnabled = document.getElementById('sfxCheck').checked;
-            const volume = document.getElementById('volumeSlider').value / 100;
-
-            // Apply audio settings
-            audio.bgm.volume = volume;
-            if (audio.bgm) {
-                audio.bgm.muted = !musicEnabled;
-                audio.bgm.volume = volume;
-            }
-
-            // Start background music if enabled
-            if (musicEnabled) {
-                audio.bgm.loop = true;
-                audio.bgm.play().catch(error => {
-                    console.log('Autoplay prevented. Click anywhere to start music.');
-                    document.body.addEventListener('click', () => {
-                        audio.bgm.play();
-                    }, { once: true });
-                });
-            }
-
-            // Close rules modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('rulesModal'));
-            modal.hide();
-
-            // Show start section (REMOVED GAME INITIALIZATION CODE)
-            document.getElementById('startSection').classList.remove('hidden');
-            document.getElementById('gameSection').classList.add('hidden');
-            document.getElementById('statsSection').classList.add('hidden');
-        }
-
-        function updateWordCount() {
-            document.getElementById('wordCount').textContent =
-                `${game.wordsPlayed}/${game.totalWords}`;
-        }
-
-        // Fixed skipWord function
-        function skipWord() {
-            game.missed.push(game.selectedWords[game.currentWord]);
-            game.currentWord++;
-            if (game.currentWord >= game.totalWords) {
-                endGame();
-            } else {
-                showNextWord();
-            }
-        }
-
-        // Game Logic Functions
-        function updateGame() {
-            const elapsed = Math.floor((Date.now() - game.startTime) / 1000);
-            const remaining = game.timeLimit - elapsed;
-
-            if (remaining <= 0) {
-                endGame();
-                return;
-            }
-            updateTimerDisplay(remaining);
-        }
-
-        // Update handleWrongAnswer function
-        function handleWrongAnswer(correctWord) {
-            game.lives--;
-            game.missed.push(correctWord);
-
-            // Update hearts display
-            const hearts = document.querySelector('#lives');
-            hearts.innerHTML = '❤️'.repeat(game.lives) + '♡'.repeat(3 - game.lives);
-
-            // Effects
-            if (navigator.vibrate) navigator.vibrate(200);
-            document.body.classList.add('vibrate');
-            setTimeout(() => document.body.classList.remove('vibrate'), 300);
-
-            if (soundEnabled) audio.wrong.play().catch(() => { });
-
-            // Only end game if lives reach 0, don't auto-advance
-            if (game.lives <= 0) {
-                while (game.currentWord < game.totalWords) {
-                    game.missed.push(game.selectedWords[game.currentWord]);
-                    game.currentWord++;
-                }
-                endGame();
-            }
-            // Stay on current word until correct answer or skip
-        }
-
-        function updateTimerDisplay(seconds) {
-            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            const secs = (seconds % 60).toString().padStart(2, '0');
-            document.getElementById('timer').textContent = `${mins}:${secs}`;
-        }
-
-        function showNextWord() {
-            if (game.currentWord >= game.totalWords) {
-                endGame();
-                return;
-            }
-
-            const word = game.selectedWords[game.currentWord];
-            document.getElementById('scrambledWord').textContent = scrambleWord(word);
-            document.getElementById('userInput').value = '';
-            document.getElementById('userInput').focus();
-            document.getElementById('hintArea').textContent = '';
-        }
-
-        function scrambleWord(word) {
-            let scrambled = word.split('').sort(() => Math.random() - 0.5).join('');
-            while (scrambled === word) scrambled = scrambleWord(word);
-            return scrambled;
-        }
-
-        function submitAnswer() {
-            const guess = document.getElementById('userInput').value.trim().toLowerCase();
-            const correct = game.selectedWords[game.currentWord].toLowerCase();
-
-            if (guess === correct) {
-                handleCorrectAnswer(correct);
-                game.currentWord++;
-                game.wordsPlayed++;
-                updateWordCount();
-                showNextWord();
-            } else {
-                handleWrongAnswer(correct);
-                game.wordsPlayed++;
-                updateWordCount();
-            }
-        }
-
-        function handleCorrectAnswer(correctWord) {
-            game.score += 100;
-            game.streak++;
-            game.longestStreak = Math.max(game.streak, game.longestStreak);
-            game.solved.push(correctWord);
-            document.getElementById('score').textContent = game.score;
-            document.getElementById('userInput').classList.add('correct');
-            if (soundEnabled) audio.correct.play().catch(() => { });
-            setTimeout(() => document.getElementById('userInput').classList.remove('correct'), 500);
-        }
-
-        // Fixed useHint function
-        function useHint() {
-            if (game.hints > 0) {
-                game.hints--;
-                const word = game.selectedWords[game.currentWord];
-                const hintCount = currentHintsUsed[game.currentWord] || 0;
-
-                // Add visual feedback for hint usage
-                document.getElementById('hintArea').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('hintArea').style.opacity = '1';
-                }, 50);
-
-                let hint = `Starts with "${word[0]}"`;
-                if (hintCount >= 1) hint += `, second letter "${word[1]}"`;
-                if (hintCount >= 2) hint += `, third letter "${word[2]}"`;
-
-                currentHintsUsed[game.currentWord] = hintCount + 1;
-                document.getElementById('hintArea').innerHTML = `<strong>Hint:</strong> ${hint}`;
-                document.querySelector('button[onclick="useHint()"]')
-                    .textContent = `Hints (${game.hints} left)`;
-            }
-        }
-
-        async function endGame() {
-            clearInterval(game.timer);
-
-            // Calculate time bonus
-            const elapsed = Math.floor((Date.now() - game.startTime) / 1000);
-            const remaining = Math.max(0, game.timeLimit - elapsed);
-
-            let timeBonus = 0;
-            let perfectBonus = 0;
-            let streakBonus = game.longestStreak * 10;
-
-            // Only give bonuses if words were solved
-            if (game.solved.length > 0) {
-                timeBonus = remaining;
-
-                // Perfect game bonus
-                if (game.solved.length === game.totalWords) {
-                    perfectBonus = 100;
-                }
-
-                // Apply bonuses
-                game.score += timeBonus + streakBonus + perfectBonus;
-            } else {
-                // All words skipped
-                game.score = 0;
-            }
-
-            if (game.solved.length === game.totalWords && game.hints === 3) {
-                setTimeout(() => showPopup('perfectPopup', audio.perfect), 500);
-            }
-
-            // Update high score
-            if (game.score > highScore) {
-                setTimeout(() => showPopup('highscorePopup', audio.highscore), 500);
-                highScore = game.score;
-                localStorage.setItem('wordGameHighScore', highScore.toString()); // Ensure string storage
-                document.getElementById('highScoreValue').textContent = highScore;
-                createConfetti();
-                if (soundEnabled) audio.highscore.play().catch(() => { });
-            }
-
-
-
-
-            // Update statistics
-            document.getElementById('statTotal').textContent = game.totalWords;
-            document.getElementById('statSolved').textContent = game.solved.length;
-            document.getElementById('solvedWords').textContent = game.solved.join(', ');
-            document.getElementById('statMissed').textContent = game.missed.length;
-            document.getElementById('missedWords').textContent = game.missed.join(', ');
-            document.getElementById('statPercentage').textContent = ((game.solved.length / game.totalWords) * 100).toFixed(1);
-            document.getElementById('timeBonus').textContent = timeBonus + streakBonus + perfectBonus;
-            document.getElementById('statStreak').textContent = game.longestStreak;
-            document.getElementById('finalScore').textContent = game.score;
-
-            // Show stats section
-            document.getElementById('gameSection').classList.add('hidden');
-            document.getElementById('statsSection').classList.remove('hidden');
-        }
-
-        function showPopup(elementId, sound) {
-                const popup = document.getElementById(elementId);
-                popup.classList.remove('hidden');
-                if (soundEnabled) sound.play().catch(() => { });
-
-                // Add close event to the X button
-                const closeButton = popup.querySelector('.close-popup');
-                if (closeButton) {
-                    closeButton.onclick = () => popup.classList.add('hidden');
-                }
-            }
-
-
-
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
-                document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 5000);
-            }
-        }
-
-        async function playAgain() {
-            if (game.timer) {
-                clearInterval(game.timer);
-                game.timer = null;
-            }
-
-            showLoader();
-            await new Promise(resolve => setTimeout(resolve, 500));
-            document.getElementById('statsSection').classList.add('hidden');
-            document.getElementById('startSection').classList.remove('hidden');
-            hideLoader();
-
-            // Reset game state
-            game = {
-                difficulty: 'easy',
-                totalWords: 5,
-                timeLimit: 120,
-                currentWord: 0,
-                score: 0,
-                lives: 3,
-                hints: 3,
-                streak: 0,
-                longestStreak: 0,
-                timer: null,
-                startTime: null,
-                selectedWords: [],
-                solved: [],
-                missed: [],
-                wordsPlayed: 0
-            };
-        }
-
-        // Helper functions
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // Enter key support
-        document.getElementById('userInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') submitAnswer();
-        });
-
-        // Sound toggle handler
-        document.getElementById('soundToggle').addEventListener('click', () => {
-            const wasEnabled = musicEnabled || soundEnabled;
-            musicEnabled = !wasEnabled;
-            soundEnabled = !wasEnabled;
-
-            audio.bgm.muted = !musicEnabled;
-            document.getElementById('soundToggle').innerHTML =
-                `<i class="bi ${wasEnabled ? 'bi-volume-mute' : 'bi-volume-up'}"></i>`;
-        });
-    </script>
+    <aside class="sound-control" aria-label="Audio controls">
+      <button
+        id="soundToggle"
+        class="btn btn-sm btn-outline-secondary"
+        aria-label="Toggle sound on/off"
+        title="Toggle Audio"
+        type="button"
+      >
+        <i class="bi bi-volume-up" aria-hidden="true"></i>
+      </button>
+      <div
+        id="volumePanel"
+        class="volume-panel hidden"
+        role="dialog"
+        aria-label="Volume controls"
+      >
+        <div class="vp-row">
+          <label for="musicVol" class="small mb-1">Music</label>
+          <input id="musicVol" type="range" min="0" max="100" step="1" />
+        </div>
+        <div class="vp-row">
+          <label for="sfxVol" class="small mb-1">SFX</label>
+          <input id="sfxVol" type="range" min="0" max="100" step="1" />
+        </div>
+      </div>
+    </aside>
+
+    <!-- External JavaScript Libraries -->
+    <!-- Removed unused Vanta/Three scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+
+    <!-- Local JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/words.js"></script>
+    <script src="js/audioManager.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/game.js"></script>
+
+    <!-- Initialize Background Effects -->
+    <script>
+      // Initialize background effects when DOM loads
+      document.addEventListener("DOMContentLoaded", () => {
+        if (typeof BackgroundEffects !== "undefined") {
+          window.backgroundEffects = new BackgroundEffects();
+        }
+      });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js").catch(function (err) {
+            console.warn("Service worker registration failed:", err);
+          });
+        });
+      }
+    </script>
+    <!-- Safety fallback: never leave loading screen stuck -->
+    <script>
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          var loader = document.getElementById("loadingScreen");
+          if (loader) {
+            loader.style.opacity = "0";
+            loader.style.display = "none";
+          }
+          // Only reveal the start section if the game hasn't begun and stats aren't showing
+          var start = document.getElementById("startSection");
+          var game = document.getElementById("gameSection");
+          var stats = document.getElementById("statsSection");
+          var gameVisible = game && !game.classList.contains("hidden");
+          var statsVisible = stats && !stats.classList.contains("hidden");
+          if (!gameVisible && !statsVisible && start) {
+            start.classList.remove("hidden");
+          }
+        }, 6000);
+      });
+    </script>
+  </body>
 </html>

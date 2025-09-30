@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Delete unused candy assets",
+			"type": "shell",
+			"command": "del /q assets\\bg\\candy1.svg assets\\bg\\candy2.svg assets\\bg\\candy3.svg assets\\bg\\candy_pattern.png",
+			"args": [],
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
