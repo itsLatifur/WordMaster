@@ -3,7 +3,7 @@
 A professional word unscrambling game with multiple difficulty levels, built with modern web technologies.
 
 ![WordsMaster Game](https://img.shields.io/badge/Game-WordsMaster-blue)
-![Version](https://img.shields.io/badge/Version-1.0.0-green)
+![Version](https://img.shields.io/badge/Version-2.0.0(beta)-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## Features
