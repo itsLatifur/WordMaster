@@ -1,4 +1,4 @@
-# WordsMaster 🎯
+# WordsMaster
 
 A professional word unscrambling game with multiple difficulty levels, built with modern web technologies.
 
@@ -6,7 +6,7 @@ A professional word unscrambling game with multiple difficulty levels, built wit
 ![Version](https://img.shields.io/badge/Version-1.0.0-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## ✨ Features
+## Features
 
 ### Game Mechanics
 
@@ -32,7 +32,7 @@ A professional word unscrambling game with multiple difficulty levels, built wit
 - **Performance Optimized**: Efficient audio loading and background effects
 - **Local Storage**: Persistent high scores and user preferences
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -72,7 +72,7 @@ A professional word unscrambling game with multiple difficulty levels, built wit
    npm start
    ```
 
-## 🎮 How to Play
+## How to Play
 
 1. **Choose Difficulty**: Select Easy, Medium, or Hard mode
 2. **Configure Audio**: Set your music and sound effect preferences
@@ -89,7 +89,7 @@ A professional word unscrambling game with multiple difficulty levels, built wit
 - **Perfect Game Bonus**: 100 extra points for completing without hints
 - **Hint Penalty**: No penalty, but no perfect bonus if hints are used
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 wordsmaster/
@@ -114,7 +114,7 @@ wordsmaster/
 └── README.md             # This file
 ```
 
-## 🛠 Technical Details
+## Technical Details
 
 ### Architecture
 
@@ -127,16 +127,14 @@ wordsmaster/
 
 - **Bootstrap 5.3.0**: UI framework for responsive design
 - **Bootstrap Icons**: Icon font for consistent UI elements
-- **Vanta.js**: Animated background effects
-- **Three.js**: 3D graphics library for background animations
-
+  
 ### Browser Support
 
 - **Modern Browsers**: Chrome 60+, Firefox 60+, Safari 12+, Edge 79+
 - **Mobile Browsers**: iOS Safari 12+, Chrome Mobile 60+
 - **Features**: ES6 classes, async/await, CSS Grid, Flexbox
 
-## 🎨 Customization
+## Customization
 
 ### Adding New Words
 
@@ -174,7 +172,7 @@ Replace audio files in `assets/audio/` with your own sounds:
 - `highscore-sfx.mp3`: New high score sound
 - `perfect-sfx.mp3`: Perfect game sound
 
-## 📱 Responsive Design
+## Responsive Design
 
 The game automatically adapts to different screen sizes:
 
@@ -182,14 +180,14 @@ The game automatically adapts to different screen sizes:
 - **Tablet**: Optimized button sizes and spacing
 - **Mobile**: Touch-friendly interface with adjusted layouts
 
-## ♿ Accessibility
+## Accessibility
 
 - **Keyboard Navigation**: Full game playable with keyboard
 - **Screen Readers**: ARIA labels and semantic HTML
 - **High Contrast**: Clear visual distinction between elements
 - **Reduced Motion**: Respects user's motion preferences
 
-## 🔧 Development
+## Development
 
 ### Scripts
 
@@ -207,7 +205,7 @@ npm run test     # Run tests (future enhancement)
 - **Modular**: Separate files for different concerns
 - **Error Handling**: Comprehensive try-catch blocks
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -215,18 +213,16 @@ npm run test     # Run tests (future enhancement)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Bootstrap Team**: For the excellent UI framework
-- **Vanta.js**: For beautiful animated backgrounds
-- **Three.js Community**: For 3D graphics capabilities
 - **Web Audio API**: For advanced audio control
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - [ ] User accounts and cloud save
 - [ ] Multiplayer mode
@@ -241,4 +237,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by [itsLatifur](https://github.com/itsLatifur)**
+**Made by [Latifur](https://latifur.dev)**
